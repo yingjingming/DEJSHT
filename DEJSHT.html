@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吊耳吊装计算选择</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        select, button {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<h1>选择吊耳类型进行计算</h1>
+
+<!-- 吊耳类型选择 -->
+<label for="earType">选择吊耳类型：</label>
+<select id="earType" name="earType">
+    <option value="four">四吊耳</option>
+    <option value="two">双吊耳</option>
+    <option value="single">单吊耳</option>
+</select>
+
+<br>
+
+<!-- 跳转按钮 -->
+<button id="calculateBtn">进入计算</button>
+
+<script>
+    document.getElementById('calculateBtn').addEventListener('click', async function() {
+        const earType = document.getElementById('earType').value;
+
+        // 定义 pageType 映射
+        const pageTypeMap = {
+            'four': 1,   // 四吊耳对应 pageType = 1
+            'two': 2,    // 双吊耳对应 pageType = 2
+            'single': 3  // 单吊耳对应 pageType = 3
+        };
+
+        const pageType = pageTypeMap[earType]; // 获取对应的 pageType
+        const targetPage = {
+            'four': 'four_diaoer.html',
+            'two': 'double_diaoer.html',
+            'single': 'singleEar.html'
+        }[earType]; // 获取对应页面链接
+
+        try {
+            // 同步向后端发送 pageType 参数
+            await fetch('https://190d-2409-8931-43b-9dcf-2d41-5ac6-fe16-fc55.ngrok-free.app/selectType', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pageType })
+            });
+
+            if(!targetPage){
+                console.error('Target page is undefined for earType:', earType);
+                alert('无法找到对应的计算页面');
+                return;
+            }
+
+            // 成功后跳转到对应页面
+            window.location.href = targetPage;
+        } catch (error) {
+            console.error('Failed to send pageType to the backend:', error);
+            alert('服务器通信失败，请稍后重试。');
+        }
+    });
+</script>
+
+</body>
+</html>
